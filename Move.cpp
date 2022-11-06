@@ -4,8 +4,8 @@
  * Move.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Danny Rudnick Eliana Daugherty Eliza Taylor
+ * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
  */
@@ -19,18 +19,64 @@
 using namespace std;
 
 Move::Move(string commandString) : Move() {
-    //TODO: Implement non-default constructor
+    stringstream ss(commandString);
+    char x;
+    ss >> x;
+    if(commandString == "") {
+        isPass = true;
+    }
+    else if(toupper(x) == 'Q') {
+        isQuit = true;
+    }
+    else if (toupper(x) == 'S') {
+        isSave = true;
+    }
+    else if (x == 'e') {
+        ss >> elevatorId;
+        ss >> x;
+        if(x == 'p'){
+            isPickup = true;
+        } else {
+            ss >> targetFloor;
+        }
+    }
 }
 
 bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
-    //TODO: Implement isValidMove
-    
-    //Returning false to prevent compilation error
-    return false;
+    if(isPass || isQuit || isSave) {
+        return true;
+    }
+    if(elevatorId >= 0 && elevatorId < NUM_ELEVATORS) {
+        if(isPickup) {
+            return true;
+        } else if (targetFloor >= 0 && targetFloor < NUM_FLOORS){
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
 }
 
 void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, const Floor& pickupFloor) {
-    //TODO: Implement setPeopleToPickup
+    numPeopleToPickup = 0;
+    totalSatisfaction = 0;
+    char num;
+    int anger;
+    int maxNum = 0;
+    stringstream ss(pickupList);
+    while(ss >> num){
+        num = num - '0';
+        peopleToPickup[numPeopleToPickup] = num;
+        numPeopleToPickup++;
+        anger = pickupFloor.getPersonByIndex(num).getAngerLevel();
+        totalSatisfaction += (MAX_ANGER - anger);
+        if((abs(pickupFloor.getPersonByIndex(num).getTargetFloor() - currentFloor)) > maxNum) {
+            maxNum = pickupFloor.getPersonByIndex(num).getTargetFloor();
+        }
+    }
+    targetFloor = maxNum;
 }
 
 //////////////////////////////////////////////////////
