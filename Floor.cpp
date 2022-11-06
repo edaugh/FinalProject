@@ -4,8 +4,8 @@
  * Floor.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Danny Rudnick Eliana Daugherty Eliza Taylor
+ * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
  */
@@ -16,22 +16,66 @@
 using namespace std;
 
 int Floor::tick(int currentTime) {
-    //TODO: Implement tick
-
-    //returning 0 to prevent compilation error
-    return 0;
+    int numExploded = 0;
+    int indexExploaded[MAX_PEOPLE_PER_FLOOR];
+    for(int i = 0; i < numPeople; i++) {
+        if(people[i].tick(currentTime)){
+            indexExploaded[numExploded] = i;
+            numExploded++;
+        }
+    }
+    removePeople(indexExploaded, numExploded);
+    return numExploded;
 }
 
 void Floor::addPerson(Person newPerson, int request) {
-    //TODO: Implement addPerson
+    if(numPeople < MAX_PEOPLE_PER_FLOOR) {
+        people[numPeople] = newPerson;
+        numPeople++;
+    }
+    if(request > 0) {
+        setHasUpRequest(true);
+    }
+    if(request < 0) {
+        setHasDownRequest(true);
+    }
 }
 
 void Floor::removePeople(int indicesToRemove[MAX_PEOPLE_PER_FLOOR], int numPeopleToRemove) {
-    //TODO: Implement removePeople
+    Person tempArray[numPeople];
+    int numCop = 0;
+    bool keep = true;
+    for(int i = 0; i  < numPeople; i++) {
+        keep = true;
+        for(int j = 0; j < numPeopleToRemove; j++) {
+            if(i == indicesToRemove[j]){
+                keep = false;
+            }
+        }
+            if(keep) {
+                tempArray[numCop] = people[i];
+                numCop++;
+            }
+    }
+    
+    for(int i = 0; i < numCop; i++) {
+        people[i] = tempArray[i];
+    }
+    numPeople = numCop;
+    resetRequests();
 }
 
 void Floor::resetRequests() {
-    //TODO: Implement resetRequests
+    hasUpRequest = false;
+    hasDownRequest = false;
+    for(int i = 0; i < numPeople; i++) {
+        if(people[i].getCurrentFloor() < people[i].getTargetFloor()) {
+            hasUpRequest = true;
+        }
+        else if(people[i].getCurrentFloor() > people[i].getTargetFloor()) {
+            hasDownRequest = true;
+        }
+    }
 }
 
 //////////////////////////////////////////////////////
