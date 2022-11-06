@@ -4,8 +4,8 @@
  * Elevator.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Danny Rudnick Eliana Daugherty Eliza Taylor
+ * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
  */
@@ -16,11 +16,22 @@
 using namespace std;
 
 void Elevator::tick(int currentTime) {
-    //TODO: Implement tick
+    if(currentTime % TICKS_PER_ELEVATOR_MOVE == 0 && servicing) {
+        if(currentFloor > targetFloor) {
+            currentFloor--;
+        }
+        else if (currentFloor < targetFloor) {
+            currentFloor++;
+        }
+        else {
+            servicing = false;
+        }
+    }
 }
 
 void Elevator::serviceRequest(int floorNum) {
-    //TODO: Implement serviceRequest
+    targetFloor = floorNum;
+    servicing = true;
 }
 
 //////////////////////////////////////////////////////
