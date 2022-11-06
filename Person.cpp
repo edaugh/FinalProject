@@ -4,8 +4,8 @@
  * Person.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Danny Rudnick Eliana Daugherty Eliza Taylor 
+ * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
  */
@@ -18,18 +18,29 @@
 using namespace std;
 
 Person::Person(string inputString) : Person() {
-    //TODO: Implement non-default constructor
+    stringstream ss(inputString);
+    char x;
+    ss >> turn;
+    ss >> x;
+    ss >> currentFloor;
+    ss >> x;
+    ss >> targetFloor;
+    ss >> x;
+    ss >> angerLevel;
 }
 
 bool Person::tick(int currentTime) {
-    //TODO: Implement tick
-
-    //Returning false to prevent compilation error
+    if(currentTime % TICKS_PER_ANGER_INCREASE == 0) {
+        angerLevel++;
+    }
+    if(angerLevel >= MAX_ANGER) {
+        return true;
+    }
     return false;
 }
 
 void Person::print(ostream &outs) {    
-    //TODO: Implement print
+    outs << "f" << currentFloor << "t" << targetFloor << "a" << angerLevel << endl;
 }
 
 //////////////////////////////////////////////////////
