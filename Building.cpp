@@ -4,8 +4,8 @@
  * Building.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Danny Rudnick Eliana Daugherty Eliza Taylor Justin Esdale
+ * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
  */
@@ -15,18 +15,32 @@
 using namespace std;
 
 void Building::spawnPerson(Person newPerson){
-    //TODO: Implement spawnPerson
+    floors[newPerson.getCurrentFloor()].addPerson(newPerson, (newPerson.getTargetFloor())-(newPerson.getCurrentFloor()));
+    
 }
 
 void Building::update(Move move){
-    //TODO: Implement update
+    int newList[MAX_PEOPLE_PER_FLOOR];
+    if(!(move.isPassMove())) {
+        elevators[move.getElevatorId()].serviceRequest(move.getTargetFloor());
+    }
+    if(move.isPickupMove()) {
+        move.copyListOfPeopleToPickup(newList);
+        floors[(elevators[move.getElevatorId()].getCurrentFloor())].removePeople(newList,move.getNumPeopleToPickup());
+    }
 }
 
 int Building::tick(Move move){
-    //TODO: Implement tick
-
-    //returning 0 to prevent compilation error
-    return 0;
+    time++;
+    update(move);
+    int numExploded = 0;
+    for(int i = 0; i < NUM_ELEVATORS; i++) {
+        elevators[i].tick(time);
+    }
+    for(int i = 0; i < NUM_FLOORS; i++) {
+        numExploded += floors[i].tick(time);
+    }
+    return numExploded;
 }
 
 //////////////////////////////////////////////////////
