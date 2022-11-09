@@ -4,7 +4,7 @@
  * Move.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * Danny Rudnick Eliana Daugherty Eliza Taylor
+ * Danny Rudnick Eliana Daugherty Eliza Taylor Justin Esdale
  * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
@@ -46,10 +46,10 @@ bool Move::isValidMove(Elevator elevators[NUM_ELEVATORS]) const {
     if(isPass || isQuit || isSave) {
         return true;
     }
-    if(elevatorId >= 0 && elevatorId < NUM_ELEVATORS) {
+    if(elevatorId >= 0 && elevatorId < NUM_ELEVATORS && !(elevators[elevatorId].isServicing())) {
         if(isPickup) {
             return true;
-        } else if (targetFloor >= 0 && targetFloor < NUM_FLOORS){
+        } else if (targetFloor >= 0 && targetFloor < NUM_FLOORS && targetFloor != elevators[elevatorId].getCurrentFloor()){
             return true;
         } else {
             return false;
@@ -72,11 +72,12 @@ void Move::setPeopleToPickup(const string& pickupList, const int currentFloor, c
         numPeopleToPickup++;
         anger = pickupFloor.getPersonByIndex(num).getAngerLevel();
         totalSatisfaction += (MAX_ANGER - anger);
-        if((abs(pickupFloor.getPersonByIndex(num).getTargetFloor() - currentFloor)) > maxNum) {
-            maxNum = pickupFloor.getPersonByIndex(num).getTargetFloor();
+        int persTargetFloor = pickupFloor.getPersonByIndex(num).getTargetFloor();
+        if((abs(persTargetFloor - currentFloor)) > maxNum) {
+            maxNum = abs(persTargetFloor - currentFloor);
+            targetFloor = persTargetFloor;
         }
     }
-    targetFloor = maxNum;
 }
 
 //////////////////////////////////////////////////////
