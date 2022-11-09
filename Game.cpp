@@ -53,6 +53,58 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
 // Stub for isValidPickupList for Core
 // You *must* revise this function according to the RME and spec
 bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const{
+    char num;
+    int newList[MAX_PEOPLE_PER_FLOOR];
+    int numPeople = 0;
+    int maxVal = 0;
+    stringstream ss(pickupList);
+    while(ss >> num){
+        num = num - '0';
+        if(num < 0) {
+            return false;
+        }
+        if(num > maxVal) {
+            maxVal = num;
+        }
+        newList[numPeople] = num;
+        numPeople++;
+        
+    }
+    if(numPeople > ELEVATOR_CAPACITY ) {
+        return false;
+    }
+    if(maxVal >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()){
+        return false;
+    }
+    for(int i = 0; i < numPeople - 1; i++) {
+        for(int j = i + 1; j < numPeople; j++){
+            if(newList[i] == newList[j]){
+                return false;
+            }
+        }
+    }
+    bool isUp = false;
+    bool isDown = false;
+    if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() > pickupFloorNum) {
+        isUp = true;
+    }
+     else if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() < pickupFloorNum) {
+        isDown = true;
+    }
+    if (isUp) {
+        for(int i = 1; i < numPeople; i++) {
+            if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() < pickupFloorNum){
+                return false;
+            }
+        }
+    }
+    if (isDown) {
+        for(int i = 1; i < numPeople; i++) {
+            if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() > pickupFloorNum){
+                return false;
+            }
+        }
+    }
     return true;
 }
 
