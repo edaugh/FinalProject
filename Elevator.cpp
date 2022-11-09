@@ -4,7 +4,7 @@
  * Elevator.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * Danny Rudnick Eliana Daugherty Eliza Taylor
+ * Danny Rudnick Eliana Daugherty Eliza Taylor Justin Esdale
  * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
@@ -23,7 +23,7 @@ void Elevator::tick(int currentTime) {
         else if (currentFloor < targetFloor) {
             currentFloor++;
         }
-        else {
+        if(currentFloor == targetFloor) {
             servicing = false;
         }
     }
@@ -50,7 +50,7 @@ void Elevator::print(ostream &outs) {
 Elevator::Elevator() {
     currentFloor = 0;
     servicing = false;
-	targetFloor = 0;
+    targetFloor = 0;
 }
 
 void Elevator::setCurrentFloor(int currentFloorIn) {
