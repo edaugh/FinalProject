@@ -1,11 +1,11 @@
-﻿/*
+/*
  * Copyright 2022 University of Michigan EECS183
  *
  * Game.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Danny Rudnick Eliana Daugherty Eliza Taylor Justin Esdale
+ * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
  */
@@ -25,10 +25,13 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     std::uniform_int_distribution<> angerDist(0, 3);
 
     isAIMode = isAIModeIn;
+    if(!gameFile.is_open()){
+        exit(1);
+    }
     printGameStartPrompt();
     initGame(gameFile);
 
-    while (true) {
+    while (!gameFile.eof()) {
         int src = floorDist(gen);
         int dst = floorDist(gen);
         if (src != dst) {
@@ -49,7 +52,7 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
 
 // Stub for isValidPickupList for Core
 // You *must* revise this function according to the RME and spec
-bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const {
+bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum) const{
     return true;
 }
 
