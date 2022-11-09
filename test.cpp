@@ -64,6 +64,7 @@ void test_Person() {
 void test_Elevator() {
     // test tick and serviceRequest
     Elevator elevator;
+    Elevator elevator2;
     elevator.print(cout);
     cout << endl;
     elevator.serviceRequest(5);
@@ -81,6 +82,8 @@ void test_Elevator() {
     elevator.serviceRequest(1);
     elevator.tick(4);
     elevator.print(cout);
+    elevator2.tick(1);
+    elevator2.print(cout);
     cout << endl;
 }
 
@@ -166,8 +169,8 @@ void test_move() {
     Person Eliana("7f4t2a9");
     Person Justin("7f4t1a3");
     Person Eliza("7f4t6a3");
-    floor.addPerson(Danny, 4);
     floor.addPerson(Eliana, 2);
+    floor.addPerson(Danny, 4);
     floor.addPerson(Justin, 3);
     floor.addPerson(Eliza, 4);
     floor.printFloorPickupMenu(cout);
