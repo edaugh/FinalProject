@@ -4,8 +4,8 @@
  * Game.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * Danny Rudnick Eliana Daugherty Eliza Taylor Justin Esdale
- * dannyrud edaugh elizatay jtesdale
+ * <#Names#>
+ * <#Uniqnames#>
  *
  * Final Project - Elevators
  */
@@ -23,14 +23,15 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     std::mt19937 gen(1);
     std::uniform_int_distribution<> floorDist(0, 9);
     std::uniform_int_distribution<> angerDist(0, 3);
-
-    isAIMode = isAIModeIn;
-    if(!gameFile.is_open()){
-        exit(1);
+    
+    if(!gameFile.is_open()) {
+        exit(EXIT_FAILURE);
     }
+    
+    isAIMode = isAIModeIn;
     printGameStartPrompt();
     initGame(gameFile);
-
+        
     while (!gameFile.eof()) {
         int src = floorDist(gen);
         int dst = floorDist(gen);
@@ -38,16 +39,23 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
             std::stringstream ss;
             ss << "0f" << src << "t" << dst << "a" << angerDist(gen);
             Person p(ss.str());
+            while (building.getTime() <= p.getTurn()) {
+                building.prettyPrintBuilding(cout);
+                satisfactionIndex.printSatisfaction(cout, false);
+                checkForGameEnd();
+                Move nextMove = getMove();
+                update(nextMove);
+            }
             building.spawnPerson(p);
         }
-
-        building.prettyPrintBuilding(cout);
-        satisfactionIndex.printSatisfaction(cout, false);
-        checkForGameEnd();
-
-        Move nextMove = getMove();
-        update(nextMove);
     }
+    while(true){
+         building.prettyPrintBuilding(cout);
+         satisfactionIndex.printSatisfaction(cout, false);
+         checkForGameEnd();
+         Move nextMove = getMove();
+         update(nextMove);
+     }
 }
 
 // Stub for isValidPickupList for Core
@@ -58,49 +66,43 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     int numPeople = 0;
     int maxVal = 0;
     stringstream ss(pickupList);
+    
     while(ss >> num){
         num = num - '0';
         if(num < 0) {
             return false;
         }
-        if(num > maxVal) {
-            maxVal = num;
-        }
         newList[numPeople] = num;
         numPeople++;
         
     }
+        
     if(numPeople > ELEVATOR_CAPACITY ) {
         return false;
     }
-    if(maxVal >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()){
-        return false;
+    
+    bool direction = false;
+    bool directionChecker = false;
+    
+    if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() > pickupFloorNum) {
+        directionChecker = true;
     }
+    
     for(int i = 0; i < numPeople - 1; i++) {
+        if(newList[i] >= building.getFloorByFloorNum(i).getNumPeople()) {
+                    return false;
+                }
+        
+        if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(i).getTargetFloor() > pickupFloorNum) {
+            directionChecker = true;
+        }
+        
+        if (direction != directionChecker) {
+            return false;
+        }
+        
         for(int j = i + 1; j < numPeople; j++){
             if(newList[i] == newList[j]){
-                return false;
-            }
-        }
-    }
-    bool isUp = false;
-    bool isDown = false;
-    if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() > pickupFloorNum) {
-        isUp = true;
-    }
-     else if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() < pickupFloorNum) {
-        isDown = true;
-    }
-    if (isUp) {
-        for(int i = 1; i < numPeople; i++) {
-            if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() < pickupFloorNum){
-                return false;
-            }
-        }
-    }
-    if (isDown) {
-        for(int i = 1; i < numPeople; i++) {
-            if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() > pickupFloorNum){
                 return false;
             }
         }
