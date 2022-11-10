@@ -66,47 +66,50 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     int numPeople = 0;
     int maxVal = 0;
     stringstream ss(pickupList);
-    
     while(ss >> num){
         num = num - '0';
         if(num < 0) {
             return false;
         }
+        if(num > maxVal) {
+            maxVal = num;
+        }
         newList[numPeople] = num;
         numPeople++;
-        
+
     }
-        
     if(numPeople > ELEVATOR_CAPACITY ) {
         return false;
     }
     
-    bool direction = false;
-    bool directionChecker = false;
-    
-    if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() > pickupFloorNum) {
-        directionChecker = true;
+    if(maxVal >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()){
+        return false;
     }
     
     for(int i = 0; i < numPeople - 1; i++) {
-        if(newList[i] >= building.getFloorByFloorNum(i).getNumPeople()) {
-                    return false;
-                }
-        
-        if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(i).getTargetFloor() > pickupFloorNum) {
-            directionChecker = true;
-        }
-        
-        if (direction != directionChecker) {
-            return false;
-        }
-        
         for(int j = i + 1; j < numPeople; j++){
             if(newList[i] == newList[j]){
                 return false;
             }
         }
     }
+   
+    bool direction = false;
+    bool directionChecker = false;
+    
+    if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(newList[0]).getTargetFloor() > pickupFloorNum) {
+        direction = true;
+    }
+    
+        for(int i = 0; i < numPeople; i++) {
+            if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(i).getTargetFloor() > pickupFloorNum) {
+                directionChecker = true;
+            }
+            
+            if (direction != directionChecker) {
+                return false;
+            }
+        }
     return true;
 }
 
