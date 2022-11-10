@@ -4,8 +4,8 @@
  * Game.cpp
  * Project UID 28eb18c2c1ce490aada441e65559efdd
  *
- * <#Names#>
- * <#Uniqnames#>
+ * Danny Rudnick Eliana Daugherty Eliza Taylor
+ * dannyrud edaugh elizatay jtesdale
  *
  * Final Project - Elevators
  */
@@ -20,9 +20,6 @@ using namespace std;
 // Stub for playGame for Core, which plays random games
 // You *must* revise this function according to the RME and spec
 void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
-    std::mt19937 gen(1);
-    std::uniform_int_distribution<> floorDist(0, 9);
-    std::uniform_int_distribution<> angerDist(0, 3);
     
     if(!gameFile.is_open()) {
         exit(EXIT_FAILURE);
@@ -31,14 +28,10 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
     isAIMode = isAIModeIn;
     printGameStartPrompt();
     initGame(gameFile);
-        
-    while (!gameFile.eof()) {
-        int src = floorDist(gen);
-        int dst = floorDist(gen);
-        if (src != dst) {
-            std::stringstream ss;
-            ss << "0f" << src << "t" << dst << "a" << angerDist(gen);
-            Person p(ss.str());
+      
+    string load;
+    while (gameFile >> load) {
+        Person p(load);
             while (building.getTime() <= p.getTurn()) {
                 building.prettyPrintBuilding(cout);
                 satisfactionIndex.printSatisfaction(cout, false);
@@ -48,14 +41,14 @@ void Game::playGame(bool isAIModeIn, ifstream& gameFile) {
             }
             building.spawnPerson(p);
         }
+    
+    while(true) {
+        building.prettyPrintBuilding(cout);
+        satisfactionIndex.printSatisfaction(cout, false);
+        checkForGameEnd();
+        Move nextMove = getMove();
+        update(nextMove);
     }
-    while(true){
-         building.prettyPrintBuilding(cout);
-         satisfactionIndex.printSatisfaction(cout, false);
-         checkForGameEnd();
-         Move nextMove = getMove();
-         update(nextMove);
-     }
 }
 
 // Stub for isValidPickupList for Core
@@ -64,29 +57,20 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     char num;
     int newList[MAX_PEOPLE_PER_FLOOR];
     int numPeople = 0;
-    int maxVal = 0;
     stringstream ss(pickupList);
     while(ss >> num){
         num = num - '0';
         if(num < 0) {
             return false;
         }
-        if(num > maxVal) {
-            maxVal = num;
-        }
         newList[numPeople] = num;
         numPeople++;
-
     }
     if(numPeople > ELEVATOR_CAPACITY ) {
         return false;
     }
     
-    if(maxVal >= building.getFloorByFloorNum(pickupFloorNum).getNumPeople()){
-        return false;
-    }
-    
-    for(int i = 0; i < numPeople - 1; i++) {
+    for(int i = 0; i < numPeople; i++) {
         for(int j = i + 1; j < numPeople; j++){
             if(newList[i] == newList[j]){
                 return false;
@@ -102,6 +86,10 @@ bool Game::isValidPickupList(const string& pickupList, const int pickupFloorNum)
     }
     
         for(int i = 0; i < numPeople; i++) {
+            if(newList[i] >= building.getFloorByFloorNum(i).getNumPeople()){
+                return false;
+            }
+                
             if(building.getFloorByFloorNum(pickupFloorNum).getPersonByIndex(i).getTargetFloor() > pickupFloorNum) {
                 directionChecker = true;
             }
